@@ -46,6 +46,47 @@ hold on;
 plot(x,y,'g-','linewidth',2);
 hold off;
 
+%% calculate climatology
 
+% generate a matrix including all months
+all = [Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec];
 
+% select 1989 to 2015
+all0= all(range,:);
+
+% calculate climatology
+clim= mean(all0,1);
+
+% plot monthly climatology
+figure(3);
+plot(1:12,clim,'k-');
+ylabel('climatological temperature','fontsize',14);
+set(gca,'xtick',2:2:12);
+set(gca,'xticklabel',{'Feb' 'Apr' 'Jun' 'Aug' 'Oct' 'Dec'}); 
+
+% calculate anomalies from the climatology
+anom = all0 - repmat(clim,[N 1]);
+% for loop method
+%for n=1:N
+%    anom(n,:) = all0(n,:) - clim;
+%end
+
+% convert 137x12 matrix into (137x12) x 1 vector
+anom = anom';
+anomv=anom(:);
+time=1879:1/12:(2016-1/12);
+%cnt=0;
+%for n=1:N
+%    for m=1:12
+%       cnt=cnt+1;
+%       anomv(cnt) = anom(n,m);
+%       time(cnt)=1879+1/12*(cnt-1);
+%    end
+%end
+
+% plot temperature anomaly
+figure(4);
+plot(time,anomv,'k-');
+ylabel('temperature anomaly','fontsize',14);
+xlabel('time','fontsize',14);
 
