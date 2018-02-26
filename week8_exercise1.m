@@ -22,42 +22,46 @@ load SavannahTemp.mat;
 range = find(Year>=per(1)&Year<=per(2));
 T(:,N) = Temp_annual(range);
 
-% remove mean values
+% Data matrix : remove mean values
 for i=1:N
-  Tp(:,i)=T(:,i)-mean(T(:,i));
+  D(:,i)=T(:,i)-mean(T(:,i));
 end
 
 % % replace NaNs with 0
-% Tp(isnan(Tp))=0;
+% D(isnan(D))=0;
 
 % look at the two variables
-plot(Tp(:,1),Tp(:,2),'ko');
+plot(D(:,1),D(:,2),'ko');
 xlabel('Atlanta temperature anomaly, deg F');
 ylabel('Savannah temperature anomaly, deg F');
 
 % calculate the covariance matrix
-C = 1/(Nt-1)*Tp'*Tp;
+C = 1/(Nt-1)*D'*D;
 
 % eigen decomposition of C
-[E,D] = eig(C);
+[E,V] = eig(C);
 
 % explained variance
-d = diag(D);
-expvar = d/sum(d);
+lambda = diag(V);
+expvar = lambda/sum(lambda);
 disp(['The 1st EOF explains ', ... 
     num2str(expvar(N)*100),'% of variance'])
 
 % plot eigenvectors
 hold on;
 for i=1:N
-  quiver(0,0,-E(1,i),-E(2,i),5*expvar(i));
+  quiver(0,0,-E(1,i),-E(2,i),3*expvar(i));
 end
 
 % plot the data and the 1st principal component
+pc1 = -D*E(:,N);
+% normalize pc1
+pc1 = pc1/std(pc1);
+
 figure(2);
-plot(year,Tp);
+plot(year,D);
 hold on;
-plot(year,-Tp*E(:,N),'k-','linewidth',1);
+plot(year,pc1,'k-','linewidth',1);
 hold off;
 legend({'Atlanta' 'Savannah' 'PC1'});
 xlabel('time');
