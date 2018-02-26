@@ -3,7 +3,7 @@
 % safety first, clean up  
 close all
 clearvars
-addpath ~/MATLAB/m_map
+addpath m_map1.4/m_map
 
 % load in monthly mean surface air temp data
 lat=ncread('air.mon.mean.nc','lat');
