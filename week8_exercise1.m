@@ -33,7 +33,7 @@ end
 % look at the two variables
 plot(Tp(:,1),Tp(:,2),'ko');
 xlabel('Atlanta temperature anomaly, deg F');
-xlabel('Savannah temperature anomaly, deg F');
+ylabel('Savannah temperature anomaly, deg F');
 
 % calculate the covariance matrix
 C = 1/(Nt-1)*Tp'*Tp;
@@ -50,7 +50,7 @@ disp(['The 1st EOF explains ', ...
 % plot eigenvectors
 hold on;
 for i=1:N
-  quiver(0,0,E(1,i),E(2,i),5*expvar(i));
+  quiver(0,0,-E(1,i),-E(2,i),5*expvar(i));
 end
 
 % plot the data and the 1st principal component
