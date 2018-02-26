@@ -1,4 +1,4 @@
-%% week 8 exercise1.m
+%% week 8 exercise2.m
 
 % safety first, clean up  
 close all
@@ -14,6 +14,7 @@ range = find(Year>=per(1)&Year<=per(2));
 year = Year(range);
 T(:,N) = Annual(range);
 clear Jan Feb Mar Apr May Jun Jul Aug Sep Nov Dec
+Nt=length(year);
 
 % load Savannah data
 N=N+1;
@@ -23,7 +24,7 @@ T(:,N) = Temp_annual(range);
 
 % remove mean values
 for i=1:N
-  Tp(:,i)=T(:,i)-nanmean(T(:,i));
+  Tp(:,i)=T(:,i)-mean(T(:,i));
 end
 
 % % replace NaNs with 0
@@ -35,7 +36,7 @@ xlabel('Atlanta temperature anomaly, deg F');
 xlabel('Savannah temperature anomaly, deg F');
 
 % calculate the covariance matrix
-C = Tp'*Tp;
+C = 1/(Nt-1)*Tp'*Tp;
 
 % eigen decomposition of C
 [E,D] = eig(C);
