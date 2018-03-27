@@ -9,13 +9,13 @@ close all;
 % 1. set up model parameter
 H = 4000;  % full ocean depth, m
 R = 6.3e6; % radius of the Earth, m
-Area = 4*pi*R^2*0.8; % total surface area, m2
+Area = 4*pi*R^2*0.8; % total surface area, m2 
 fL = 0.8;  % fraction of low lat ocean
 V(1) = Area*fL*100; % surface low lat ocean vol, m3
 V(2) = Area*(1-fL)*300; % surface high lat ocean vol, m3
 V(3) = Area*H-V(1)-V(2); % deep ocean vol, m3; 
-C = 20*1e6;  % circulation rate (m3/s);
-M = 80*1e6;  % mixing rate, (m3/s);
+C = 10*1e6;  % circulation rate (m3/s);
+M = 40*1e6;  % mixing rate, (m3/s);
 lam = 1/(60*60*24*365); % biological P consumption rate, 1/s
 
 % 2. set up model matrix
@@ -46,7 +46,7 @@ end
 
 % 5. plot the result
 figure(1);
-year = time/(60*60*24*365);
+year = time/(60*60*24*365);    
 
 subplot(2,2,1); 
 plot(year,X);
@@ -69,12 +69,11 @@ ylabel('P concentration');
 legend({'low lat' 'high lat' 'deep'});
 title('Euler backward');
 
+subplot(2,2,4); 
+BioExport = lam*(Xb(1,:)*V(1)+Xb(2,:)*V(2));
+plot(year,BioExport);
+xlabel('time');
+ylabel('Biological P export, molP/s');
+%title('Euler backward');
 
 
-
-
-
-
-
-      
-      
