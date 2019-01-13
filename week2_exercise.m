@@ -23,7 +23,7 @@ ylabel('latitude');
 title('surface air temperature , degree C');
 
 % include m_map in the path (this is specific to where you saved m_map)
-addpath m_map1.4/m_map
+addpath m_map
 
 % global equal-area projection, hammer-aitoff
 figure(3);
