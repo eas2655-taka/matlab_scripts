@@ -1,56 +1,77 @@
 %% week2_exercise.m
 
-close all;
-clearvars;
+% safety first
+clear all
+close all
+clc
 
-% display meta data
-%ncdisp('air.mon.mean.nc');
+% read metadata
+ncdisp('air.mon.mean.nc');
 
-% load in monthly mean surface air temp data
-lat=ncread('air.mon.mean.nc','lat');
+% read in data
 lon=ncread('air.mon.mean.nc','lon');
+lat=ncread('air.mon.mean.nc','lat');
 time=ncread('air.mon.mean.nc','time');
-time=time/24/365+1800;
 air=ncread('air.mon.mean.nc','air');
 
-% make a 2D plot
-pcolor(lon,lat,air(:,:,end)');
-shading flat;
-colormap ('jet');
-colorbar ;
+% decimal year
+year = 1800+time/24/365.25;
+
+% make a map of air temperature (Jan 1948)
+figure(1);
+pcolor(lon,lat,air(:,:,1)');
+shading flat; % removes grid lines
+colormap('jet'); % changes color pattern;
+colorbar; % adds colorbar;
 xlabel('longitude');
 ylabel('latitude');
-title('surface air temperature , degree C');
+title('surface air temp in 1948 Jan');
 
-% include m_map in the path (this is specific to where you saved m_map)
+% add m_map package to the MATLAB path
 addpath m_map
 
-% global equal-area projection, hammer-aitoff
-figure(3);
-m_proj('hammer-aitoff','clongitude',-150); % define projection
-lon(end+1)=lon(1)+360;                     % wrap around the globe
-air(end+1,:,:)=air(1,:,:);
-m_pcolor(lon,lat,air(:,:,end)');
+% re-plot the data using m_map package
+figure(2);
+m_proj('robinson'); % robinson projection (global)
+lon(145)=lon(1)+360; % add 1 x-point to overlap
+air(145,:,:)=air(1,:,:);
+% then plot
+m_pcolor(lon,lat,air(:,:,1)');
 hold on;
-m_pcolor(lon-360,lat,air(:,:,end)');       % plot twice for western hemis.
-shading flat;
-colormap('jet');
-colorbar;
-m_coast;
-m_grid('xaxis','middle');
+% twice for western hemisphere
+m_pcolor(lon-360,lat,air(:,:,1)');
+
+m_coast; % draws coastlines
+m_grid; % adds grid line
+shading flat; % removes grid lines
+colormap('jet'); % changes color pattern;
+colorbar; % adds colorbar;
 xlabel('longitude');
 ylabel('latitude');
+title('surface air temp in 1948 Jan');
 
-% polar projection, stereographic, with m_contourf, m_contour or m_pcolor
-figure(4)
-m_proj('stereographic','latitude',90,'longitude',0,'radius',60); 
-%m_pcolor(lon,lat,air(:,:,end)');
-%m_contour(lon,lat,air(:,:,end)');
-m_contourf(lon,lat,air(:,:,end)');
+% polar projection
+figure(3);
+m_proj('stereographic','lat',90,'radius',60);
+% then plot
+m_pcolor(lon,lat,air(:,:,1)');
 hold on;
-shading flat;
-colormap('jet');
-colorbar;
-m_coast;
-m_grid('xaxis','bottom');
+m_coast; % draws coastlines
+m_grid; % adds grid line
+shading flat; % removes grid lines
+colormap('jet'); % changes color pattern;
+colorbar; % adds colorbar;
+xlabel('longitude');
+ylabel('latitude');
+title('surface air temp in 1948 Jan');
+
+
+
+
+
+
+
+
+
+
 
