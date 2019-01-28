@@ -1,52 +1,37 @@
-%% week4_exercise.m 
+%% week4_exercise
+
+% Taka Ito
 
 % safety first
 clear all;
 close all;
+clc;
 
-% load AtlantaTemp data
-load AtlantaTemp.mat
+load atlanta_temperature.mat;
 
-% set range to 2nd thru 138th entry
-range = 2:138;
+% plot temperature time series
+figure(1); 
+plot(Year,Annual);
+xlabel('time');
+ylabel('ATL temperature, degree F');
 
-% make a time series plot
-plot(Year(range),Annual(range));
-xlabel('Time','fontsize',16);
-ylabel('Atlanta Temperature, deg F','fontsize',16);
-axis([1879 2015 58 66]);
+% least square fit
+Y = Annual;
+X = Year;
+C = cov(X,Y);
+a1= C(1,2)/C(1,1);
+a0= mean(Y)-a1*mean(X);
 
-% regression coeff
-range = find(Year>=1879&Year<2015);
-
-x=Year(range);
-y=Annual(range);
-xyave = mean(x.*y);
-xave = mean(x);
-yave = mean(y);
-x2ave= mean(x.^2);
-y2ave= mean(y.^2);
-a = (xyave-xave*yave)/(x2ave-xave^2); % regression coeff. 
-b = yave - a*xave;
-R = (xyave-xave*yave)/sqrt((x2ave-xave^2)*(y2ave-yave^2));
-
-% plot the regression lien over the data
+% plot the result
+x=1870:2018;
+y=a0+a1*x;
+figure(1);
 hold on;
-x0 = Year(range);
-y0 = a*x0+b;
-plot(x0,y0,'r-');
-hold off;
+plot(x,y,'r-');
 
-% check the fraction of variance explained by the regression
-
-Ratio = var(y0)/var(y);
-
-
-
-
-
-
-
+% calculate R2
+R2 = C(1,2)^2/C(1,1)/C(2,2);
+disp(['R2 value is :',num2str(R2)]);
 
 
 
