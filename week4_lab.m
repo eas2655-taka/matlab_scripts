@@ -1,80 +1,39 @@
-%% week4_lab.m
+%% week4_lab 
 
-% safety first, clean up  
+% safety first
 close all
-clearvars
+clear all
+clc
 
-% time period of analysis
-per = [1880 2010];
+% load the data
+load atlanta_temperature.mat
 
-% load Atlanta data
-load AtlantaTemp.mat;
-range = find(Year>=per(1)&Year<=per(2));
-x = Year(range);
-yA= Annual(range);
-clear Jan Feb Mar Apr May Jun Jul Aug Sep Nov Dec
+% start year
+yr0 = [1950:1980];
+N0 = length(yr0);
 
-% load Savannah 
-load SavannahTemp.mat;
-range = find(Year>=per(1)&Year<=per(2));
-x = Year(range);
-yS= Temp_annual(range);
+% end year
+yr1 = [1990:2018];
+N1 = length(yr1);
 
-% plot the raw data
-figure(1);
-p(1)=plot(x,yA,'b-');
-hold on;
-p(2)=plot(x,yS,'r-');
-xlabel('Year','fontsize',15);
-ylabel('Temperature','fontsize',15);
-legend(p,{'Atlanta' 'Savannah'},'fontsize',13)
+% loop over N0 and N1
 
-% calculate linear trend
-for i=1:2
-    if i==1 % Atlanta
-        y=yA;
-    elseif i ==2 % Savannah
-        y=yS;
+for i=1:N0 % loop over yr0
+    for j=1:N1 % loop over yr1
+       I=find(Year>=yr0(i)&Year<=yr1(j)); % select time range
+       X=Year(I); % x is time
+       Y=Annual(I); % y is annual temp
+       [a,r]=regrcorr(X,Y); % calculate regression
+       trd(i,j)=a(1); % store the temp trend as trd(i,j)
     end
-    cm = cov(x,y); % covariance matrix
-    a(i) = cm(1,2)/cm(1,1);
-    b(i) = mean(y) - a(i)*mean(x);
 end
-% regression line
-yAreg = a(1)*x + b(1);
-ySreg = a(2)*x + b(2);
 
-% plot the lines
-%plot(x,yAreg,'b--');
-%plot(x,ySreg,'r--');
-
-% detrending
-yAd = yA - yAreg;
-ySd = yS - ySreg;
-
-% open new figure and plot the detrended time series
-figure(2);
-p(1)=plot(x,yAd,'b-');
-hold on;
-p(2)=plot(x,ySd,'r-');
-xlabel('Year','fontsize',15);
-ylabel('De-trended Temperature','fontsize',15);
-
-% calculate correlation
-cm = cov(yAd,ySd);
-R = cm(1,2)/sqrt(cm(1,1)*cm(2,2));
-
-% load AMO index
-load AMO.mat
-range = find(Year_AMO>=per(1)&Year_AMO<=per(2));
-x = Year_AMO(range);
-yAMO= AMO_annual(range);
-yAMO=yAMO/std(yAMO);
-
-p(3)=plot(x-10,yAMO,'k--','linewidth',3);
-legend(p,{'Atlanta' 'Savannah' 'AMO'},'fontsize',13);
-
-
-
-
+% plot the result
+figure(1);
+pcolor(yr1,yr0,trd);
+shading flat;
+colormap('jet');
+colorbar;
+xlabel('end year');
+ylabel('start year');
 
