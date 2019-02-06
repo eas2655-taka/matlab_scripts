@@ -1,49 +1,70 @@
-%% week5_exercise.m
+%% week4_lab 
 
-% safety first, clean up  
+% safety first
 close all
-clearvars
+clear all
+clc
 
-% time period of analysis
-per = [1900 2015];
+% load the data
+load atlanta_temperature.mat
 
-% load Atlanta data
-load AtlantaTemp.mat;
-range = find(Year>=per(1)&Year<=per(2));
-x = Year(range);
-y = Annual(range);
-clear Jan Feb Mar Apr May Jun Jul Aug Sep Nov Dec
+% X = Year
+% Y = Annual
+X = Year;
+Y = Annual;
 
-% plot the data and its linear trend
+% calculate temporal trend first
+C = cov(X,Y);
+a(2)= C(1,2)/C(1,1); % slope
+a(1)= mean(Y)-a(2)*mean(X); %intercept
+
+% plot it
 figure(1);
-plot(x,y,'ko-');
-[a,b,R2]=regression(x,y);
-yest=a*x+b;
+plot(X,Y,'k.');
+xlabel('time');
+ylabel('atlanta annual temp. deg F');
 hold on;
-plot(x,yest,'b--');
+plot(X,a(1)+a(2)*X,'r-');
 hold off;
 
-% Is this trend significant?
+% test the significance of the trend
 
-% 1. confidence level
-CL = .95;
+% 1. set CL
+CL = 0.95;
 
-% 2. H0: there is no significant trend from 1900 to 2000 in Atlanta temp
-%    H1: there is a significant trend
+% 2. State null hypothesis
+disp('H0: there is no significant trend');
+disp('H1: there is a signficant trend');
 
-% 3. We use t-test with two tail test
-N = length(x);
-r = correlation(y(1:N-1),y(2:N));
-Neff = N*(1-r)/(1+r);
+% 3. State statistic
+disp('Use t-statistic with two tail test')
 
-% 4. Critical region
-tcrit = tinv(.5*(CL+1),Neff-2);
+% 4. Calculate the critical t-value
+N = length(X); % total sample size
+[dummy,r]=regrcorr(Y(1:N-1),Y(2:N)); % calculating lag-1 auto correlation
+Neff=N*(1-r)/(1+r);
+df= Neff - 2; % degree of freedom
+tcrit = tinv((CL+1)/2,df);
 
-% 5. Evaluate the hypothesis
-err = y-yest;
-SE2 = sum(err.^2)/(Neff-2)/sum((x-mean(x)).^2);
+% 5. evaluate whether the data is in the confidence interval
+err2 = sum( ((a(1)+a(2)*X) - Y).^2 )/(Neff-2);
+SE2 = err2/( sum( (X-mean(X)).^2 ) );
 SE = sqrt(SE2);
-tval = a/SE;
+
+% t value = slope / SE;
+t = a(2)/SE;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
