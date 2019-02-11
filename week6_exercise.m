@@ -1,119 +1,109 @@
-%% week4_lab.m
+%% week6_exercise
 
-% safety first, clean up  
+% safety first
+clear all
 close all
-clearvars
+clc
 
-% time period of analysis
-per = [1880 2010];
+% read metadata
+%ncdisp('air.mon.mean.nc');
 
-% load Atlanta data
-load AtlantaTemp.mat;
-range = find(Year>=per(1)&Year<=per(2));
-x = Year(range);
-yA= Annual(range);
-clear Jan Feb Mar Apr May Jun Jul Aug Sep Nov Dec
+% read in data
+lon=ncread('air.mon.mean.nc','lon');
+lat=ncread('air.mon.mean.nc','lat');
+time=ncread('air.mon.mean.nc','time');
+air=ncread('air.mon.mean.nc','air');
 
-% load Savannah 
-load SavannahTemp.mat;
-range = find(Year>=per(1)&Year<=per(2));
-x = Year(range);
-yS= Temp_annual(range);
+% decimal year
+year = 1800+time/24/365.25;
 
-% plot the raw data
-figure(1);
-p(1)=plot(x,yA,'b-');
-hold on;
-p(2)=plot(x,yS,'r-');
-xlabel('Year','fontsize',15);
-ylabel('Temperature','fontsize',15);
-legend(p,{'Atlanta' 'Savannah'},'fontsize',13)
+% select July temperature
+year1 = year(7:12:end);
+air1  = air(:,:,7:12:end);
 
-% test the significance of correlation between the two samples 
-% yA: Atlanta
-% yS: Savannah
-covxy =mean(yA.*yS)-mean(yA)*mean(yS);
-varx  =mean(yA.*yA)-mean(yA)*mean(yA);
-vary  =mean(yS.*yS)-mean(yS)*mean(yS);
-R = covxy/sqrt(varx*vary);
+Nx=length(lon);
+Ny=length(lat);
+CL=0.95; % 95% confidence level
 
-% 1. define confidence level
-CL = .95;
-
-% 2. 
-% H0: there is no significant correlation between yA and yS
-% H1: there is a significant correlation
-
-% 3. Student's t-distribution with two tail test
-N = length(yA);
-rA = correlation(yA(1:N-1),yA(2:N));
-rS = correlation(yS(1:N-1),yS(2:N));
-Neff = N*(1-rA*rS)/(1+rA*rS);
-
-% 4. Calculate the critical region
-tcrit = tinv(.5*(CL+1),Neff-2);
-
-% 5. Evaluate the hypothesis with t-value of the data
-tval = R*sqrt( (Neff - 2)/(1 - R^2) );
-
-% tval > tcrit : H0 is rejected. 
-
-
-
-
-
-
-
-
-
-
-return
-% calculate linear trend
-for i=1:2
-    if i==1 % Atlanta
-        y=yA;
-    elseif i ==2 % Savannah
-        y=yS;
+for i=1:Nx
+    for j=1:Ny
+        % set x = time, y = air temp (i,j) 
+        X=year1;
+        Y=squeeze(air1(i,j,:));
+        [a,r,CI]=regrcorr2(X,Y,CL);
+        trd(i,j)=a(1);
+        r2(i,j)=r*r;
+        confint(i,j)=CI;
     end
-    cm = cov(x,y); % covariance matrix
-    a(i) = cm(1,2)/cm(1,1);
-    b(i) = mean(y) - a(i)*mean(x);
 end
-% regression line
-yAreg = a(1)*x + b(1);
-ySreg = a(2)*x + b(2);
 
-% plot the lines
-%plot(x,yAreg,'b--');
-%plot(x,ySreg,'r--');
+% set up a matrix indicating significant trend
+trdsig=ones(Nx,Ny);
+trdsig(abs(trd)<confint)=0;
 
-% detrending
-yAd = yA - yAreg;
-ySd = yS - ySreg;
+% set up matrices for long and lat
+[xx,yy]=meshgrid(lon,lat);
+xx=xx'; yy=yy';
 
-% open new figure and plot the detrended time series
-figure(2);
-p(1)=plot(x,yAd,'b-');
+% replace the values of long and lat to NaN if no trend
+xx(trdsig==0)=NaN;
+yy(trdsig==0)=NaN;
+
+% add m_map package to the MATLAB path
+addpath m_map
+cmp=[linspace(0,1,32)' linspace(0,1,32)' ones(32,1); ...
+    ones(32,1) linspace(1,0,32)' linspace(1,0,32)'];
+
+% plot the data using m_map package
+figure(1);
+m_proj('robinson'); % robinson projection (global)
+lon(145)=lon(1)+360; % add 1 x-point to overlap
+trd(145,:)=trd(1,:);
+% then plot
+m_pcolor(lon,lat,trd');
 hold on;
-p(2)=plot(x,ySd,'r-');
-xlabel('Year','fontsize',15);
-ylabel('De-trended Temperature','fontsize',15);
+% twice for western hemisphere
+m_pcolor(lon-360,lat,trd');
+% plot dots for significance
+m_plot(xx(:),yy(:),'k.');
+m_plot(xx(:)-360,yy(:),'k.');
 
-% calculate correlation
-cm = cov(yAd,ySd);
-R = cm(1,2)/sqrt(cm(1,1)*cm(2,2));
+m_coast; % draws coastlines
+m_grid('xaxis','middle'); % adds grid line
+shading flat; % removes grid lines
+colormap(cmp); % changes color pattern;
+colorbar; % adds colorbar;
+xlabel('longitude');
+ylabel('latitude');
+title('surface Jan air temperature trend');
+caxis([-.2 .2]);
 
-% load AMO index
-load AMO.mat
-range = find(Year_AMO>=per(1)&Year_AMO<=per(2));
-x = Year_AMO(range);
-yAMO= AMO_annual(range);
-yAMO=yAMO/std(yAMO);
+% repeat the plot without not significant data points
 
-p(3)=plot(x-10,yAMO,'k--','linewidth',3);
-legend(p,{'Atlanta' 'Savannah' 'AMO'},'fontsize',13);
+% plot the data using m_map package
+figure(2);
 
+% remove not significant trend
+trdsig(145,:)=trdsig(1,:);
+trd(trdsig==0)=NaN;
 
+m_proj('robinson'); % robinson projection (global)
+% then plot
+m_pcolor(lon,lat,trd');
+hold on;
+% twice for western hemisphere
+m_pcolor(lon-360,lat,trd');
+% plot dots for significance
+%m_plot(xx(:),yy(:),'k.');
+%m_plot(xx(:)-360,yy(:),'k.');
 
-
+m_coast; % draws coastlines
+m_grid('xaxis','middle'); % adds grid line
+shading flat; % removes grid lines
+colormap(cmp); % changes color pattern;
+colorbar; % adds colorbar;
+xlabel('longitude');
+ylabel('latitude');
+title('surface Jan air temperature trend');
+caxis([-.2 .2]);
 
