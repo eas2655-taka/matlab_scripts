@@ -17,8 +17,9 @@ for i=1:N(1)
         xin = X;
         yin = squeeze(Y(i,j,:));
         % call regrcorr3 function
-        [a(i,j),r(i,j),CI(i,j),siga(i,j),sigr(i,j)] ... 
+        [temp,r(i,j),CI(i,j),siga(i,j),sigr(i,j)] ... 
             = regrcorr3(xin,yin,CL);
+        a(i,j)=temp(1); % save slope only
     end
 end
 
