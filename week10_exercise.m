@@ -70,3 +70,22 @@ plot(year,BioExport);
 xlabel('time');
 ylabel('Biological P export, molP/s');
 %title('Euler backward');
+
+% 6. Steady State Solution
+
+% 6.1 Using eigenvalue-eigenvector relation
+[Q,L]=eig(T); % Q is eigenvector matrix, L is eigenvalue matrix
+
+c = inv(Q)*[2e-3; 2e-3; 2e-3];
+Pstd1 = c(1)*Q(:,1);
+
+% 6.2 Using modified model matrix
+
+Tmod = T;
+Tmod(3,:)=[V(1) V(2) V(3)];
+P0mod=[0; 0; sum(V)*2e-3]
+Pstd2 = inv(T)*P0mod;
+
+
+
+
