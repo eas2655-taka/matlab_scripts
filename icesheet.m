@@ -1,7 +1,8 @@
-%% simple ice sheet model
+%% 1.5 dimension ice sheet model
 
-% by T. Ito 2018 for EAS2655
-% originally published as Oerlemans (1981) Tellus, 33, 1-11.
+% MATLAB version by T. Ito for EAS2655, originally Spring 2018, revised 2019
+
+% Reference: Oerlemans (1981) Tellus, 33, 1-11.
 
 % safety first
 close all
@@ -14,12 +15,12 @@ x=[-L:dx:L]';
 Nx=length(x);
 
 % set time steps
-dt = 50;    % 10 year timestep
-Nt = 400; % # of time steps to take
+dt = 20;    % 20 year timestep
+Nt = 1000; % # of time steps for 20,000 years
 
 % model parameters
 G0 = 0.3;
-Y = 5e5; % 500km wide 
+Y = 1e6; % 1,000km wide 
 m = 2.5; % ice flow exponent
 A = 1; % ice flow parameter
 B0 =0; % topography height
