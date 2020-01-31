@@ -7,7 +7,7 @@ clear all
 load air.mon.mean.mat;
 
 % annual mean land temp
-lndtempam=mean(ocntemp,4);
+lndtempam=mean(lndtemp,4);
 
 % calculate regression coefficients
 N = size(lndtempam);
