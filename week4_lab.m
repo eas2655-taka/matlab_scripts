@@ -24,13 +24,16 @@ for i=1:N(1)
     end
 end
 
+% load new color scale
+load br.mat;
+
 figure(1);
-pcolor(A'); % 2D color plot
+pcolor(lon,lat,A'); % 2D color plot
 shading flat; % remove grid lines
-set(gca,'Ydir','rev'); % invert the y axis
-colormap('jet'); % set color scheme
+set(gca,'layer','top'); % bring axis lines to front
+colormap(br); % set color scheme
 colorbar; % add color bar
 caxis([-.1 .1]); % set the max/min color shading
-
-
-
+title('Linear trend of surface air temp, deg C/year');
+xlabel('longitude');
+ylabel('latitude');
