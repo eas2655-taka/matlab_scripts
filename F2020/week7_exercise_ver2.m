@@ -18,8 +18,8 @@ B = zeros(K,1);
 for n=1:K
     cosn=cos(2*pi*(n-1)*x/T);
     sinn=sin(2*pi*(n-1)*x/T);
-    A(n)=2/T*y'*cosn;
-    B(n)=2/T*y'*sinn;
+    A(n)=2/T*y'*cosn*dT;
+    B(n)=2/T*y'*sinn*dT;
 end
 
 %% assemble Fourier Series
