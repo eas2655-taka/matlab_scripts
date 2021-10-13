@@ -7,7 +7,7 @@ clear; clc;
 fclose all;
 %
 fig_path='./fig/';
-
+Addpath("./cbrewer/")
 %% load Atlanta temperature data
 % 
 data=xlsread('./ATL_MonMeanTemp_1879_2020.xls');
