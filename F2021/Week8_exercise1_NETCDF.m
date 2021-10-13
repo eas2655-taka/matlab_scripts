@@ -1,4 +1,4 @@
-%% EAS2655 Week 7 Exercise
+%% EAS2655 Week 8 Exercise
 % Handling NETCDF data
 
 % safety first
@@ -7,7 +7,7 @@ clear; clc;
 fclose all;
 %
 fig_path='./fig/';
-
+Addpath("./cbrewer/")
 %% load Atlanta temperature data
 % 
 data=xlsread('./ATL_MonMeanTemp_1879_2020.xls');

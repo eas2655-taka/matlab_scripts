@@ -1,4 +1,4 @@
-%% EAS2655 Week 7 Exercise
+%% EAS2655 Week 8 Exercise
 % Data visualization for NETCDF
 
 % safety first
