@@ -12,23 +12,41 @@ addpath('./cbrewer/');
 
 %% read data table
 % data loading
-% Nino3.4 index downloaded from:
+% Nino3.4 SST downloaded from:
 % https://climatedataguide.ucar.edu/climate-data/nino-sst-indices-nino-12-3-34-4-oni-and-tni
+
+% load nino3.4 SST data
 data=table2array(readtable('./nino34_1870_2020.txt'));
+% replace missing with NaN
 data(data==-99.99)=NaN;
+% get time
 year=data(:,1);
+% get the matrix for nino3.4 SST (152 years * 12 months)
 nino34=data(:,2:end);
 
+% time range
 tr=[1948,2021];
+% get indices for Jan 1948 to Dec 2020
 tind=(year>=tr(1)&year<tr(2));
 
+% get year within time range
 year_sel=year(tind);
+% get nino3.4 SST within time range
 nino34_sel=nino34(tind,:);
 
 ny=length(year_sel);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% get anomaly for all months
 %% calculate anomaly to remove seasonal cycle
+
+% get the climatological mean
 nino34_mean=mean(nino34_sel,1);
+
+% get the anomaly for each month
 nino34_anomaly=nino34_sel-repmat(nino34_mean,ny,1);
+
 % reshape the anomaly matrix into a time series
 % transpose nino34 matrix to get the correct order
 nino34_ano_ser=reshape(nino34_anomaly',[],1);
@@ -38,11 +56,21 @@ nino34_ano_ser=reshape(nino34_anomaly',[],1);
 T_mat=year_mat+(month_mat-1)/12;
 T_ser=reshape(T_mat',1,[]);
 
-% year_mat=repmat(year_sel,1,12);
-% year_ser=reshape(year_mat',[],1);
-% month_mat=repmat([1:12],ny,1);
-% month_ser=reshape(month_mat',[],1);
-% T_ser=year_ser+(month_ser-1)./12;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% if we only need one month data (i.e., homework)
+% get July nino34 SST
+nino34_JUL=nino34_sel(:,7);
+% get nino34 SST anomaly (i.e., nino3.4 index)
+nino34_ano_JUL=nino34_JUL-nanmean(nino34_JUL);
+
+x=year_sel;
+y=nino34_ano_JUL;
+
+figure;
+plot(x,y);
+xlabel('Year');
+ylabel('Nino 3.4 index, July (^\circC)');
+
 
 %% calculate the z-score
 z_nino34=(nino34_ano_ser-nanmean(nino34_ano_ser))./std(nino34_ano_ser,0);
