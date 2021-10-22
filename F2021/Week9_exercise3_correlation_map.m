@@ -69,7 +69,7 @@ y=nino34_ano_JUL;
 figure;
 plot(x,y);
 xlabel('Year');
-ylabel('Nino 3.4, July');
+ylabel('Nino 3.4 index, July (^\circC)');
 
 
 %% calculate the z-score
