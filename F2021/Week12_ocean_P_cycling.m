@@ -49,7 +49,7 @@ xlabel('time (months)')
 ylabel('ocean P concentrations, m-mol/m3')
 
 
-%% 3. analytical solution using matrix exponential
+%% 3. Numerical solution using Euler forward 
 for n=2:N
     Pef(:,n)=(eye(3)+dt*T)*Pef(:,n-1);
 end
@@ -60,12 +60,12 @@ hold on;
 plot(time, P)
 plot(time, Pef)
 legend({'low lat surface','high lat surface','deep ocean',...
-    'low lat surface (EF)','high lat surface(EF)','deep ocean (EF)'});
+    'low lat surface (Ef)','high lat surface(Ef)','deep ocean (Ef)'});
 xlabel('time (months)')
 ylabel('ocean P concentrations, m-mol/m3')
 
 
-%% 4. analytical solution using matrix exponential
+%% 4. Numerical solution using Euler backward
 for n=2:N
     Peb(:,n)=(eye(3)-dt*T)\Peb(:,n-1);
 end
