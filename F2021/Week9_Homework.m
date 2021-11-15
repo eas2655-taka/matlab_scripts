@@ -145,7 +145,8 @@ function [a,r,CI_slope,CI_r] = regrcorr3(X,Y,CL)
 % Input : two vectors of equal length and confidence level (CL)
 % Output: a = regression coefficient
 %         r = correlation coefficient
-%         CI= confidence interval
+%         CI_slope= confidence interval for the regression (slope)
+%.        CI_r = confidence interval for the correlation coefficient
 
 % covarince matrix
 C=cov(X,Y);
